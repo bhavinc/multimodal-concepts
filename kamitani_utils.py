@@ -1,6 +1,3 @@
-
-
-
 from glob import glob
 import itertools
 from loguru import logger
