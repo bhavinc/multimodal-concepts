@@ -1,4 +1,6 @@
 
+
+
 from glob import glob
 import itertools
 from loguru import logger
@@ -18,24 +20,31 @@ from sklearn.model_selection import PredefinedSplit
 from sklearn.linear_model import LinearRegression
 
 
+DESKIAN_ATLAS = "/home/bhavin/Desktop/fmri_projects/aparc+aseg.2mm.mgz"
+DESTRIEUX_ATLAS = "/home/bhavin/Desktop/fmri_projects/aparc_2009.2mm.mgz"
+TRAIN_BETAS_DIR = "/mnt/HD1/bhavin/GLM_MAIN_DATASINK/datasink/glm_train_implicit_mni305"
+TEST_BETAS_DIR = "/mnt/HD3/milad/BigGANProject/datasink/glm_test_mni305"
+LANGUAGE_MODELS_REPS = "/home/bhavin/Desktop/fmri_projects"
+VISUAL_MODELS_REPS = "/mnt/HD2/bhavin/all_layerwise_reps"
+
+
 def _get_mask(region_idx,atlas):
 
     # get the atlas
     if atlas == 'destrieux':
-        # logger.debug('Using Destrieux Atlas...')
-        aparc_file = nib.load("/home/bhavin/Desktop/fmri_projects/aparc_2009.2mm.mgz")
+        aparc_file = nib.load(DESKIAN_ATLAS)
     else:
-        # logger.debug("Using Deskian/Killiany Atlas...")
-        aparc_file = nib.load("/home/bhavin/Desktop/fmri_projects/aparc+aseg.2mm.mgz")
-        
+        aparc_file = nib.load(DESKIAN_ATLAS)
     aparc_data = aparc_file.get_fdata()
-    
+
     # get the mask
     if region_idx is not None:
+
         if isinstance(region_idx,int):
             region_mask = aparc_data == region_idx
         elif isinstance(region_idx,tuple):
             region_mask = np.isin(aparc_data,region_idx)
+
     else:
         region_mask = aparc_data != np.nan    #basically whole brain
 
@@ -44,6 +53,7 @@ def _get_mask(region_idx,atlas):
 
 
 def get_region_vectors(sub_idx,region_idx,atlas='default',use_train=True,use_test=True):
+
     '''
     Function to get beta values in a specific regions of the brain.
 
@@ -56,39 +66,37 @@ def get_region_vectors(sub_idx,region_idx,atlas='default',use_train=True,use_tes
 
         NOTE : if both use_train and use_test are given to be True, the first 150 will we train and the next 50 will be test. This order has to be preserved for all the subsequent analysis.
     '''
-    
+
     region_mask = _get_mask(region_idx,atlas)
 
-    train_beta_dir = f'/mnt/HD1/bhavin/GLM_MAIN_DATASINK/datasink/glm_train_implicit_mni305/sub-0{sub_idx}'
-    test_betas_dir = f'/mnt/HD3/milad/BigGANProject/datasink/glm_test_mni305/sub-0{sub_idx}'
+    train_beta_dir = opj(TRAIN_BETAS_DIR,f"sub-0{sub_idx}")
+    test_beta_dir = opj(TEST_BETAS_DIR,f"sub-0{sub_idx}")
 
     # get all names for beta files
     beta_fnames = []
     if use_train==True:
         beta_fnames = sorted([f for f in os.listdir(train_beta_dir) if f[:4]=='beta'])
         beta_fnames = [opj(train_beta_dir,f) for f in beta_fnames[2:152]]
-        
+
     if use_test==True:
-        test_beta_fnames = sorted([f for f in glob(opj(test_betas_dir,'*.nii')) if re.search(r'\d+_\d+',f)])
+        test_beta_fnames = sorted([f for f in glob(opj(test_beta_dir,'*.nii')) if re.search(r'\d+_\d+',f)])
         assert len(test_beta_fnames)==50
-        
+
         for x in test_beta_fnames:
             beta_fnames.append(x)
+
 
     # get the betas
     beta_data = []
     for fname in beta_fnames:
-
         beta_file = load_img(fname) 
         orig_data = beta_file.get_data()
-
         assert beta_file.shape == region_mask.shape
 
         region_data = np.nan*np.ones(orig_data.shape,dtype=orig_data.dtype)
         region_data[region_mask] = orig_data[region_mask]
 
         beta_data.append(region_data)
-
 
     if use_train == True and use_test == True  : assert len(beta_data) == 200
     if use_train == True and use_test == False : assert len(beta_data) == 150 
@@ -119,6 +127,7 @@ def _get_vector_size(model_name):
 
 
 def get_model_vectors(model_name,use_train=True,use_test=True): 
+
     '''
     Get the RDMs for the models        
     '''
@@ -126,7 +135,7 @@ def get_model_vectors(model_name,use_train=True,use_test=True):
     #handle language models separately
     if model_name in ['BERT','GPT2','CLIP-L']:
         
-        vector_mat =  np.load(f"/home/bhavin/Desktop/fmri_projects/{model_name}_200_vecs.npy")
+        vector_mat =  np.load(f"{LANGUAGE_MODELS_REPS}/{model_name}_200_vecs.npy")
         out_vec = vector_mat[:150,:150] if use_train==True and use_test==False else vector_mat[150:,150:]
         out_vec = vector_mat if use_train==True and use_test==True else out_vec
         return out_vec
@@ -135,7 +144,6 @@ def get_model_vectors(model_name,use_train=True,use_test=True):
     
         num_images = 150 if use_train == True and use_test == False else 50
         num_images = 200 if use_train == True and use_test == True else num_images
-
 
         indx = 0
         vectorlist = []
@@ -160,7 +168,7 @@ def get_model_vectors(model_name,use_train=True,use_test=True):
                             '7734744', '7756951', '7758680', '11978233', '12582231', '12596148', '13111881')
 
 
-            train_path = f"/mnt/HD2/bhavin/all_layerwise_reps/{model_name}_representations_fmri_kamitani_train_avgpool.p"
+            train_path = opj(VISUAL_MODELS_REPS,f"{model_name}_representations_fmri_kamitani_train_avgpool.p")
             with open(train_path,'rb') as ff:
                 rep_dict = pickle.load(ff)
 
@@ -184,10 +192,10 @@ def get_model_vectors(model_name,use_train=True,use_test=True):
 
         # add test reps
         if use_test == True:
-            folderpath = '/mnt/HD3/milad/BigGANProject/datasink/glm_test_mni305/sub-01' 
+            folderpath = f'{TEST_BETAS_DIR}/sub-01'  # just to get the names and order
             fnames = [f'beta_00{valid_num:02d}.nii' for valid_num in range(3,53)] #valid_num = 3...52 
 
-            rep_file = f"/mnt/HD2/bhavin/all_layerwise_reps/{model_name}_representations_fmri_test_{layer_to_use}.p"
+            rep_file = opj(VISUAL_MODELS_REPS,f"{model_name}_representations_fmri_test_avgpool.p")
             with open(rep_file,'rb') as ff: 
                 rep_dict = pickle.load(ff)
 
@@ -202,11 +210,13 @@ def get_model_vectors(model_name,use_train=True,use_test=True):
                                 vectorlist.append(rep_dict[key]) 
                                 vector_mat[indx,:] = rep_dict[key].flatten()
                                 indx += 1
-
     return  vector_mat
 
 
+
+
 def get_interesting_regions(use_atlas):
+
     '''
     Get all the regions that can be interesting based on the atlas. 
     use_atlas can be 'default' or 'destrieux' 
@@ -259,10 +269,11 @@ def get_interesting_regions(use_atlas):
 
             # 11123: 'ctx_lh_G_oc-temp_med-Parahip',
             # 12123: 'ctx_rh_G_oc-temp_med-Parahip',
-
         }
 
+
     elif use_atlas == 'destrieux':
+
 
         interesting_regions_mapping = {
 
@@ -307,7 +318,6 @@ def get_interesting_regions(use_atlas):
             (11123,12123):'ctx_G_oc-temp_med-Parahip',
 
             (17,53,18,54,11123,12123):'MTL_combined',
-
         }
     else : 
         raise ValueError("Wrong name for the atlas. Supported values are 'default' or 'destrieux'")
