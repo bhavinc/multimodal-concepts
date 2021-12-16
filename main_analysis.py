@@ -65,6 +65,7 @@ class Args:
 
     @property
     def SAVE_DIR(self):
+        # make sure to create the dir you need
         return f"./plots_for_paper/{'test' if self.USE_TEST_BETAS else 'train'}_atlas_{self.USE_ATLAS}_{'zerocentered' if args.ZERO_CENTER_BRAIN_RDMS else ''}_distance_{self.DISTANCE}_corrfunc_{self.CORR_FUNC.__name__}"
 
     @property
