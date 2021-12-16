@@ -17,12 +17,12 @@ from sklearn.model_selection import PredefinedSplit
 from sklearn.linear_model import LinearRegression
 
 
-DESKIAN_ATLAS = "/home/bhavin/Desktop/fmri_projects/aparc+aseg.2mm.mgz"
-DESTRIEUX_ATLAS = "/home/bhavin/Desktop/fmri_projects/aparc_2009.2mm.mgz"
-TRAIN_BETAS_DIR = "/mnt/HD1/bhavin/GLM_MAIN_DATASINK/datasink/glm_train_implicit_mni305"
-TEST_BETAS_DIR = "/mnt/HD3/milad/BigGANProject/datasink/glm_test_mni305"
-LANGUAGE_MODELS_REPS = "/home/bhavin/Desktop/fmri_projects"
-VISUAL_MODELS_REPS = "/mnt/HD2/bhavin/all_layerwise_reps"
+DESKIAN_ATLAS = ""
+DESTRIEUX_ATLAS = ""
+TRAIN_BETAS_DIR = ""
+TEST_BETAS_DIR = ""
+LANGUAGE_MODELS_REPS = ""
+VISUAL_MODELS_REPS = ""
 
 
 def _get_mask(region_idx,atlas):
