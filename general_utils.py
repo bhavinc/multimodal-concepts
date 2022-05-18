@@ -55,7 +55,7 @@ def calculate_noise_ceilings(all_rdms,corr_func=pearsonr):
     """
     Calcuilate the lower noise ceilings for each subject.
     """
-    total_nums = len(all_rdsm)
+    total_nums = len(all_rdms)
     
     all_corrs = []
     for each_sub in range(1,total_nums+1):
