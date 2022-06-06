@@ -6,3 +6,5 @@ sklearn
 nibabel
 nilearn
 pickle
+tqdm
+omegaconf
