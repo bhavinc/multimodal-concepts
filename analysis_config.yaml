@@ -1,0 +1,54 @@
+
+# MAIN_TASKS :
+#   - 'normal_correlations',
+#   - 'select_top30_voxels',
+#   - 'select_voxels_based_on_hippocampus',
+#   - 'select_from_train_for_test',
+#   - 'max_of_each_region'
+
+
+MAIN_TASK : 'select_top30_voxels' . #has to be a choice from the MAIN_TASKS
+
+DISTANCE : 'correlation'           # distance used to get the rdms
+CORR_FUNC : pearsonr               # between rdms
+
+
+STATISTICAL_TEST : ttest_ind
+
+SAVE_DIR : 'temp'
+
+MODELS : 
+    - ['clip', 'attnpool']
+    # - ['virtex', 'avgpool'] #older version of virtex
+    - ['virtexv2', 'avgpool']
+    - ['icmlm-attfc', 'avgpool']
+    - ['icmlm-tfm', 'avgpool']
+    - ['tsmresnet50', 'avgpool']
+
+
+
+    - ['BiT' , 'head.avg']
+    - ['resnet','avgpool']
+    - ['madryli8','avgpool']
+    - ['madryli4','avgpool']
+    - ['madryl23','avgpool']
+    - ['geirhos_sin','avgpool']
+    - ['geirhos_sinin','avgpool']
+    - ['geirhos_sininfin','avgpool']
+
+
+    - ['BERT','-']
+    - ['GPT2','-']
+    - ['CLIP-L','-']
+
+    
+
+
+
+
+USE_ATLAS : 'default'
+USE_TRAIN_BETAS : False   
+USE_TEST_BETAS : True
+# ZERO_CENTER_BRAIN_RDMS : False
+# self.ZERO_CENTER_MODEL_RDMS = False
+
