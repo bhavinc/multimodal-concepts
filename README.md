@@ -5,7 +5,7 @@ Code to reproduce the results presented in the SVRHM Workshop (NeurIPS 2021) pap
 
 ## Introduction
 
-
+<p align='center'>< img src="./images/Flow_conceptcellproject.png" width="600")></p>
 
 
 
