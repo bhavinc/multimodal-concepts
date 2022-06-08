@@ -10,7 +10,8 @@ Code to reproduce the results presented in the SVRHM Workshop (NeurIPS 2021) pap
 
 
 ## Reproducing the results
-Please download the fMRI data from [KamitaniLab](https://github.com/KamitaniLab/GenericObjectDecoding)
+To reproduce the results shown in this article, please download the preprocessed fMRI dataset from [figshare](link).
+The raw fMRI dataset can be directly downlaoded from [KamitaniLab](https://github.com/KamitaniLab/GenericObjectDecoding)'s github page.
 
 ### Setup 
 
