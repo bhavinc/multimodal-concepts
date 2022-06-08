@@ -3,7 +3,8 @@
 Code to reproduce the results presented in the SVRHM Workshop (NeurIPS 2021) paper ['Multimodal neural networks better explain multivoxel patterns in the hippocampus'](https://openreview.net/forum?id=6dymbuga7nL).
 
 
-## Introduction
+## Abstract
+The human hippocampus possesses "concept cells", neurons that fire when presented with stimuli belonging to a specific concept, regardless of the modality. Recently, similar concept cells were discovered in a multimodal network called CLIP [1].Here, we ask whether CLIP can explain the fMRI activity of the human hippocampus better than a purely visual (or linguistic) model. We extend our analysis to a range of publicly available uni- and multi-modal models. We demonstrate that __"multimodality"__ stands out as a key component when assessing the ability of a network to explain the multivoxel activity in the hippocampus.
 
 <!-- <p align='center'><img src="./images/Flow_conceptcellproject.png" width="600")></p> -->
 
